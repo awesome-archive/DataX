@@ -27,7 +27,7 @@ import com.alibaba.datax.core.util.container.ClassLoaderSwapper;
 import com.alibaba.datax.core.util.container.CoreConstant;
 import com.alibaba.datax.core.util.container.LoadUtil;
 import com.alibaba.datax.dataxservice.face.domain.enums.ExecuteMode;
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
@@ -427,7 +427,7 @@ public class JobContainer extends AbstractContainer {
             Long channelLimitedByteSpeed = this.configuration
                     .getLong(CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_SPEED_BYTE);
             if (channelLimitedByteSpeed == null || channelLimitedByteSpeed <= 0) {
-                DataXException.asDataXException(
+                throw DataXException.asDataXException(
                         FrameworkErrorCode.CONFIG_ERROR,
                         "在有总bps限速条件下，单个channel的bps值不能为空，也不能为非正数");
             }
@@ -448,7 +448,7 @@ public class JobContainer extends AbstractContainer {
             Long channelLimitedRecordSpeed = this.configuration.getLong(
                     CoreConstant.DATAX_CORE_TRANSPORT_CHANNEL_SPEED_RECORD);
             if (channelLimitedRecordSpeed == null || channelLimitedRecordSpeed <= 0) {
-                DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR,
+                throw DataXException.asDataXException(FrameworkErrorCode.CONFIG_ERROR,
                         "在有总tps限速条件下，单个channel的tps值不能为空，也不能为非正数");
             }
 

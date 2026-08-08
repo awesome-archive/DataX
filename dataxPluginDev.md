@@ -111,7 +111,7 @@ public class SomeReader extends Reader {
 ```
 
 `Job`接口功能如下：
-- `init`: Job对象初始化工作，测试可以通过`super.getPluginJobConf()`获取与本插件相关的配置。读插件获得配置中`reader`部分，写插件获得`writer`部分。
+- `init`: Job对象初始化工作，此时可以通过`super.getPluginJobConf()`获取与本插件相关的配置。读插件获得配置中`reader`部分，写插件获得`writer`部分。
 - `prepare`: 全局准备工作，比如odpswriter清空目标表。
 - `split`: 拆分`Task`。参数`adviceNumber`框架建议的拆分数，一般是运行时所配置的并发度。值返回的是`Task`的配置列表。
 - `post`: 全局的后置工作，比如mysqlwriter同步完影子表后的rename操作。
@@ -155,7 +155,7 @@ public class SomeReader extends Reader {
 ```
 
 - `name`: 插件名称，大小写敏感。框架根据用户在配置文件中指定的名称来搜寻插件。 **十分重要** 。
-- `class`: 入口类的全限定名称，框架通过反射穿件入口类的实例。**十分重要** 。
+- `class`: 入口类的全限定名称，框架通过反射插件入口类的实例。**十分重要** 。
 - `description`: 描述信息。
 - `developer`: 开发人员。
 
@@ -435,7 +435,7 @@ DataX的内部类型在实现上会选用不同的java类型：
 
 #### 如何处理脏数据
 
-在`Reader.Task`和`Writer.Task`中，功过`AbstractTaskPlugin.getPluginCollector()`可以拿到一个`TaskPluginCollector`，它提供了一系列`collectDirtyRecord`的方法。当脏数据出现时，只需要调用合适的`collectDirtyRecord`方法，把被认为是脏数据的`Record`传入即可。
+在`Reader.Task`和`Writer.Task`中，通过`AbstractTaskPlugin.getTaskPluginCollector()`可以拿到一个`TaskPluginCollector`，它提供了一系列`collectDirtyRecord`的方法。当脏数据出现时，只需要调用合适的`collectDirtyRecord`方法，把被认为是脏数据的`Record`传入即可。
 
 用户可以在任务的配置中指定脏数据限制条数或者百分比限制，当脏数据超出限制时，框架会结束同步任务，退出。插件需要保证脏数据都被收集到，其他工作交给框架就好。
 
@@ -446,6 +446,9 @@ DataX的内部类型在实现上会选用不同的java类型：
 2. 以`plugin.json`文件中`name`为key，索引所有的插件配置。如果发现重名的插件，框架会异常退出。
 3. 用户在插件中在`reader`/`writer`配置的`name`字段指定插件名字。框架根据插件的类型（`reader`/`writer`）和插件名称去插件的路径下扫描所有的jar，加入`classpath`。
 4. 根据插件配置中定义的入口类，框架通过反射实例化对应的`Job`和`Task`对象。
+
+### 编写测试用例
+1. 在datax-example工程下新建新的插件测试模块,调用`ExampleContainer.start(jobPath)`方法来检测你的代码逻辑是否正确。[datax-example使用](https://github.com/alibaba/DataX/blob/master/datax-example/doc/README.md)
 
 
 ## 三、Last but not Least
@@ -468,4 +471,4 @@ DataX的内部类型在实现上会选用不同的java类型：
 	- 测试参数集（多组），系统参数（比如并发数），插件参数（比如batchSize）
 	- 不同参数下同步速度（Rec/s, MB/s），机器负载（load, cpu）等，对数据源压力（load, cpu, mem等）。
 6. **约束限制**：是否存在其他的使用限制条件。
-7. **FQA**：用户经常会遇到的问题。
+7. **FAQ**：用户经常会遇到的问题。
